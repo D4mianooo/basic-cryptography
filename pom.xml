@@ -7,6 +7,11 @@
     <groupId>org.crypto</groupId>
     <artifactId>Cryptography</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <modules>
+        <module>Model</module>
+        <module>View</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>23</maven.compiler.source>
