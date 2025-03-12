@@ -3,11 +3,20 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<SplitPane dividerPositions="0.24120603015075376" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.MainController">
+<SplitPane dividerPositions="0.24120603015075376, 0.5" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.AESController">
+    <MenuBar>
+        <Menu text="Asymetryczne">
+            <MenuItem fx:id="desBtn" text="DES" />
+        </Menu>
+        <Menu text="Symetryczne">
+            <MenuItem fx:id="aesBtn" text="AES" />
+        </Menu>
+    </MenuBar>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
       <children>
          <TextField layoutX="14.0" layoutY="14.0" prefHeight="25.0" prefWidth="550.0" />
          <Button fx:id="keyBtn" layoutX="583.0" layoutY="14.0" mnemonicParsing="false" text="Key" />
+         <Button layoutX="462.0" layoutY="79.0" mnemonicParsing="false" text="DUPA" />
       </children></AnchorPane>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
         <GridPane prefHeight="451.0" prefWidth="998.0">
