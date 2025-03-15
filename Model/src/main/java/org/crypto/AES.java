@@ -18,6 +18,19 @@ public class AES {
             newState[i] = (byte)(state[i]^key[i]);
         }
         return newState;
+        
+    }
+    
+    private byte[] SubBytes(byte[] state){
+        byte[] newState = new byte[BLOCK_SIZE];
+        for(int i = 0; i < BLOCK_SIZE; i++){
+            newState[i] = SubByte(state[i]);
+        }
+        return newState;
+    }
+    
+    public byte SubByte(byte state){
+        return (byte) box[(state + 256) % 256];
     }
 
     public byte[]  KeyExpansion(byte[] key){
