@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -17,8 +18,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import org.crypto.AES;
+
 public class AESController implements Initializable {
 
+    @FXML
+    private TextField keyValue;
     @FXML
     private TextArea input;
     @FXML
@@ -62,8 +67,11 @@ public class AESController implements Initializable {
             Button btn = new Button("Encrypt");
             stage.setScene(new Scene(root));
         });
-//        keyBtn.setOnAction(event -> {
-//
-//        })
+        keyBtn.setOnAction(event -> {
+            AES aes = new AES();
+            byte[] bytes = aes.InitialKey();
+            System.out.println(bytes.length);
+            keyValue.setText(bytes.toString());
+        });
     }
 }
