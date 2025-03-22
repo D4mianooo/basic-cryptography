@@ -43,16 +43,20 @@ public class AES {
         this.key = key;
     }
     
-    public void EncryptBlock(byte[] state) {
+    public byte[] GetKey(){
+        return key;
+    }
+    
+    public byte[] EncryptBlock(byte[] state) {
         byte[][] keyExpanded = KeyExpansion(key);
         //initial
         byte[] newState = AddRoundKey(state, keyExpanded[0]);
         // 9, 11, 13
         for(int i = 1; i < ROUNDS; i++) {
-            newState = AddRoundKey(state, keyExpanded[i]);
             newState = SubBytes(newState);
             newState = ShiftRows(newState);
             newState = MixColumns(newState);
+            newState = AddRoundKey(state, keyExpanded[i]);
         } 
         
         newState = SubBytes(newState);
@@ -60,8 +64,29 @@ public class AES {
         newState = AddRoundKey(state, keyExpanded[10]);
 
         //10 , 12, 14
-        
+        return newState;
     }
+
+//    public byte[] DecryptBlock(byte[] state) {
+//        byte[][] keyExpanded = KeyExpansion(key);
+//        //initial
+//        byte[] newState = AddRoundKey(state, keyExpanded[0]);
+//        // 9, 11, 13
+//        for(int i = 1; i < ROUNDS; i++) {
+//            newState = InvShiftRows(newState);
+//            newState = InvSubBytes(newState);
+//            newState = InvMixColumns(newState);
+//            newState = AddRoundKey(state, keyExpanded[i]);
+//        }
+//
+//        newState = InvShiftRows(newState);
+//        newState = InvSubBytes(newState);
+//        newState = AddRoundKey(state, keyExpanded[10]);
+//
+//        //10 , 12, 14
+//        return newState;
+//    }
+    
     
     public byte[] InitialKey() {
         byte[] key = new byte[KEY_SIZE];
@@ -71,7 +96,7 @@ public class AES {
     }
     
     private byte[][] KeyExpansion(byte[] key) {
-        byte[][] expandedKey = new byte[(ROUNDS + 1)][N];
+        byte[][] expandedKey = new byte[(ROUNDS + 1)][KEY_SIZE];
 
         for(int word = 0; word < ROUNDS + 1; word++) {
             if(word < N) {
@@ -163,19 +188,22 @@ public class AES {
     }
     
     private byte[] RotWord(byte[] word){
-        byte[] newWord = new byte[4];
+        byte[] newWord = new byte[16];
 
-        for (int i = 0; i < 4; i++) {
-            newWord[i] = word[(i + 1) % 4];
+        for (int y = 0; y < 4; y++) {
+            newWord[y * 4] = word[y * 4 + 1];
+            newWord[y * 4 + 1] = word[y * 4 + 2];
+            newWord[y * 4 + 2] = word[y * 4 + 3];
+            newWord[y * 4 + 3] = word[y * 4];
         }
-        
+
         return newWord;
     }
 
     private byte[] SubWord(byte[] word){
-        byte[] newWord = new byte[4];
+        byte[] newWord = new byte[16];
         
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 16; i++) {
             newWord[i] = SubByte(word[i]);
         }
         
