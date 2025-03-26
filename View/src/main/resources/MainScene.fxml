@@ -2,14 +2,28 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.crypto.MainSceneController">
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" style="-fx-background-color: silver;" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.crypto.MainSceneController">
     <Tab text="AES">
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
             <VBox prefHeight="573.0" prefWidth="1000.0">
-                <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
-                    <TextField alignment="TOP_RIGHT" prefHeight="25.0" prefWidth="267.0" />
-                    <Button fx:id="keyBtn" mnemonicParsing="false" text="Button" />
+                <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" style="-fx-background-color: dimgrey;">
+                    <Text fill="White" strokeType="OUTSIDE" strokeWidth="0.0" text="Key Value:">
+                        <font>
+                            <Font size="16.0" />
+                        </font>
+                    </Text>
+                    <TextField fx:id="keyVal" prefHeight="25.0" prefWidth="270.0" style="-fx-background-color: silver;" />
+                    <Button fx:id="keyBtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="60.0" style="-fx-background-color: silver;" text="Key" />
+                    <Text fill="White" strokeType="OUTSIDE" strokeWidth="0.0" text="Key Length: ">
+                        <font>
+                            <Font size="16.0" />
+                        </font>
+                    </Text>
+                    <RadioButton fx:id="Btn128" mnemonicParsing="false" prefHeight="17.0" prefWidth="60.0" text="128bit" textFill="White" />
+                    <RadioButton fx:id="Btn192" mnemonicParsing="false" prefHeight="17.0" prefWidth="60.0" text="192bit" textFill="White" />
+                    <RadioButton fx:id="Btn256" mnemonicParsing="false" prefHeight="17.0" prefWidth="60.0" text="256bit" textFill="White" />
                 </HBox>
                 <GridPane prefHeight="451.0" prefWidth="998.0">
                     <columnConstraints>
@@ -20,30 +34,30 @@
                     <rowConstraints>
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
-                    <VBox alignment="CENTER" cache="true" prefHeight="200.0" prefWidth="100.0">
+                    <VBox alignment="CENTER" cache="true" prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: dimgrey;">
                         <HBox alignment="CENTER_LEFT" prefHeight="48.0" prefWidth="333.0" spacing="5.0">
-                            <TextField prefHeight="25.0" prefWidth="209.0" />
-                            <Button fx:id="openBtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" text="Open" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" />
+                            <TextField prefHeight="25.0" prefWidth="209.0" style="-fx-background-color: silver;" />
+                            <Button fx:id="openBtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: silver;" text="Open" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" />
                         </HBox>
-                        <TextArea fx:id="input" prefHeight="337.0" prefWidth="333.0" />
+                        <TextArea fx:id="input" prefHeight="337.0" prefWidth="333.0" style="-fx-background-color: silver;" />
                         <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" prefHeight="48.0" prefWidth="333.0" spacing="5.0">
-                            <TextField prefHeight="25.0" prefWidth="209.0" />
-                            <Button fx:id="saveBtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" text="Save" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" />
+                            <TextField prefHeight="25.0" prefWidth="209.0" style="-fx-background-color: silver;" />
+                            <Button fx:id="saveBtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: silver;" text="Save" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" />
                         </HBox>
                     </VBox>
-                    <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="5.0" GridPane.columnIndex="1">
-                        <Button fx:id="encryptBtn" alignment="CENTER" mnemonicParsing="false" prefHeight="25.0" prefWidth="280.0" text="Encrypt &gt;&gt;" />
-                        <Button fx:id="decryptBtn" alignment="CENTER" layoutX="101.0" layoutY="214.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="280.0" text="&lt;&lt; Decrypt" />
+                    <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" style="-fx-background-color: dimgrey;" GridPane.columnIndex="1">
+                        <Button fx:id="encryptBtn" alignment="CENTER" mnemonicParsing="false" prefHeight="25.0" prefWidth="280.0" style="-fx-background-color: silver;" text="Encrypt &gt;&gt;" />
+                        <Button fx:id="decryptBtn" alignment="CENTER" layoutX="101.0" layoutY="214.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="280.0" style="-fx-background-color: silver;" text="&lt;&lt; Decrypt" />
                     </VBox>
-                    <VBox alignment="CENTER" cache="true" layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="2">
+                    <VBox alignment="CENTER" cache="true" layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: dimgrey;" GridPane.columnIndex="2">
                         <HBox alignment="CENTER_LEFT" prefHeight="48.0" prefWidth="333.0" spacing="5.0">
-                            <TextField prefHeight="25.0" prefWidth="209.0" />
-                            <Button fx:id="openBtn1" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" text="Open" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" />
+                            <TextField prefHeight="25.0" prefWidth="209.0" style="-fx-background-color: silver;" />
+                            <Button fx:id="openBtn1" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: silver;" text="Open" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" />
                         </HBox>
-                        <TextArea fx:id="output" prefHeight="337.0" prefWidth="333.0" />
+                        <TextArea fx:id="output" prefHeight="337.0" prefWidth="333.0" style="-fx-background-color: silver;" />
                         <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" prefHeight="48.0" prefWidth="333.0" spacing="5.0">
-                            <TextField prefHeight="25.0" prefWidth="209.0" />
-                            <Button fx:id="saveBtn1" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" text="Save" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" />
+                            <TextField prefHeight="25.0" prefWidth="209.0" style="-fx-background-color: silver;" />
+                            <Button fx:id="saveBtn1" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: silver;" text="Save" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" />
                         </HBox>
                     </VBox>
                 </GridPane>
@@ -51,6 +65,6 @@
         </AnchorPane>
     </Tab>
     <Tab text="DES">
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: dimgrey;" />
     </Tab>
 </TabPane>

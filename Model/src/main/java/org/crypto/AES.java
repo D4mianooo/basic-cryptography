@@ -19,20 +19,18 @@ public class AES {
             0x70, 0x3e, 0xb5, 0x66, 0x48, 0x03, 0xf6, 0x0e, 0x61, 0x35, 0x57, 0xb9, 0x86, 0xc1, 0x1d, 0x9e,
             0xe1, 0xf8, 0x98, 0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf,
             0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16};
-    private static final byte[] MATRIX = 
-            {2, 3, 1, 1,
-            1, 2, 3, 1,
-            1, 1, 2, 3,
-            3, 1, 1, 2 };
+    private static final int[] RCON = {
+            0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, (byte)0x80, 0x1b, 0x36,
+            0x6c, 0xd8, 0xab, 0x4d, 0x9a // Extended for AES-256
+    };
     private static final byte KEY_SIZE = 16;
     private static final byte BLOCK_SIZE = 16;
     private static final byte ROUNDS = 10;
-    private static final byte N = KEY_SIZE / 4;
+    private static final byte N_WORDS = KEY_SIZE / 4;
     
     private byte[] key = new byte[KEY_SIZE];
     
     public AES(){
-        key = InitialKey();
     }
     
     public AES(byte[] key){
@@ -49,21 +47,21 @@ public class AES {
     
     public byte[] EncryptBlock(byte[] state) {
         byte[][] keyExpanded = KeyExpansion(key);
-        //initial
+        
         byte[] newState = AddRoundKey(state, keyExpanded[0]);
-        // 9, 11, 13
+        
+ 
         for(int i = 1; i < ROUNDS; i++) {
             newState = SubBytes(newState);
             newState = ShiftRows(newState);
             newState = MixColumns(newState);
-            newState = AddRoundKey(state, keyExpanded[i]);
+            newState = AddRoundKey(newState, keyExpanded[i]);
         } 
         
         newState = SubBytes(newState);
         newState = ShiftRows(newState);
-        newState = AddRoundKey(state, keyExpanded[10]);
+        newState = AddRoundKey(newState, keyExpanded[ROUNDS]);
 
-        //10 , 12, 14
         return newState;
     }
 
@@ -87,39 +85,42 @@ public class AES {
 //        return newState;
 //    }
     
-    
-    public byte[] InitialKey() {
-        byte[] key = new byte[KEY_SIZE];
-        SecureRandom random = new SecureRandom();
-        random.nextBytes(key);
-        return key;
-    }
-    
     private byte[][] KeyExpansion(byte[] key) {
-        byte[][] expandedKey = new byte[(ROUNDS + 1)][KEY_SIZE];
+        int expandedKeySize = (ROUNDS + 1) * N_WORDS;
+        byte[][] expandedKey = new byte[expandedKeySize][N_WORDS];
+        byte[] temp = new byte[N_WORDS];
+        
+        for(int i = 0; i < N_WORDS; i++) {
+            expandedKey[i] = new byte[]{key[i * 4], key[i * 4 + 1], key[i * 4 + 2], key[i * 4 + 3]};
+        }
 
-        for(int word = 0; word < ROUNDS + 1; word++) {
-            if(word < N) {
-                expandedKey[word] = key;
-            } else if (word >= N && word % N == 0) {
-                expandedKey[word] = XOR(expandedKey[word - N], SubWord(RotWord(expandedKey[word - 1])));
-                expandedKey[word][0] ^= (byte) Math.pow(2, word);
-            } else if(word >= N && N > 6 && word % N == 4){
-                expandedKey[word] = XOR(expandedKey[word - 4], SubWord(expandedKey[word - 1]));  
-            }else {
-                expandedKey[word] = XOR(expandedKey[word - 4], expandedKey[word - 1]);
+  
+        for(int word = N_WORDS; word < expandedKeySize; word++) {
+            System.arraycopy(expandedKey[word - 1], 0, temp, 0, N_WORDS);
+            if (word % N_WORDS == 0) {
+                temp =  SubWord(RotWord(temp));
+                temp[0] ^= (byte) RCON[(word/N_WORDS) - 1];
+            } else if(word % N_WORDS == 4){
+                temp = SubWord(temp);
+            }
+            
+            for(int i = 0; i < N_WORDS; i++) {
+                expandedKey[word][i] = (byte) (expandedKey[word - N_WORDS][i] ^ temp[i]);
             }
         }
-        
-        return expandedKey;
-    }
-    
-    private byte[] XOR(byte[] tab, byte[] tab2) {
-        byte[] result = new byte[tab.length];
-        for (int i = 0; i < tab.length; i++) {
-            result[i] = (byte) (tab[i] ^ tab2[i]);
-        }    
-        
+
+
+        byte[][] result = new byte[(ROUNDS + 1)][BLOCK_SIZE];
+        for (int x = 0; x < (ROUNDS + 1); x++) {
+            byte[] block = new byte[BLOCK_SIZE];
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 4; j++) {
+                    block[i * 4 + j] = expandedKey[x * 4 + i][j];
+                }
+            }
+            result[x] = block;
+        }
+
         return result;
     }
     
@@ -135,14 +136,13 @@ public class AES {
         byte[] newState = new byte[BLOCK_SIZE];
         for(int i = 0; i < BLOCK_SIZE; i++){
             newState[i] = SubByte(state[i]);
-            
         }
         return newState;
     }
     
     
-    private byte SubByte(byte state){
-        return (byte) SBOX[(state + 256) % 256];
+    private byte SubByte(byte b){
+        return (byte) SBOX[b & 255];
     }
 
     private byte[] ShiftRows(byte[] state){
@@ -150,63 +150,77 @@ public class AES {
         
 //        for (int x = 0; x < 4; x++) {
 //            for (int y = 0; y < 4; y++) {
-//                newState[(x * 4) + y] = state[(x * 4) + y + x) % 4 + 4 * x];
+//                newState[(y * 4) + x] = (byte) (state[(y * 4) + x] ^ x);
 //            }
 //        }
-        System.arraycopy(state, 0, newState, 0, 4);
-        newState[4] = state[5];
-        newState[5] = state[6];
-        newState[6] = state[7];
-        newState[7] = state[4];
-        
-        newState[8] = state[10];
-        newState[9] = state[11];
-        newState[10] = state[8];
-        newState[11] = state[9];
-        
-        newState[12] = state[15];
-        newState[13] = state[13];
-        newState[14] = state[14];
-        newState[15] = state[12];
-        return newState;
-    }
+        newState[0] = state[0];
+        newState[4] = state[4];
+        newState[8] = state[8];
+        newState[12] = state[12];
 
-    private byte[] MixColumns(byte[] state){
-        byte[] newState = new byte[BLOCK_SIZE];
-        
-        for (int x = 0; x < 4; x++) {
-            for (int y = 0; y < 4; y++) {
-                newState[(y * 4) + x] = 0;
-                for(int z = 0; z < 4; z++) {
-                    newState[(y * 4) + x] += (byte) (state[(z * 4) + x] * MATRIX[(x * 4) + z]);
-                }
-                
-            }
-        }
-        
+// Row 1 - shift left 1 (but in decryption, it should be right shift 1)
+        newState[1] = state[5];   // Should be newState[1] = state[13] (right shift)
+        newState[5] = state[9];   // Should be newState[5] = state[1]
+        newState[9] = state[13];  // Should be newState[9] = state[5]
+        newState[13] = state[1];  // Should be newState[13] = state[9]
+
+// Row 2 - shift left 2 (correct for both encryption and decryption)
+        newState[2] = state[10];
+        newState[6] = state[14];
+        newState[10] = state[2];
+        newState[14] = state[6];
+
+// Row 3 - shift left 3 (should be right shift 3 = left shift 1)
+        newState[3] = state[15];  // Should be newState[3] = state[7] (right shift 3)
+        newState[7] = state[3];   // Should be newState[7] = state[11]
+        newState[11] = state[7];  // Should be newState[11] = state[15]
+        newState[15] = state[11]; // Should be newState[15] = state[3]
         return newState;
     }
     
-    private byte[] RotWord(byte[] word){
-        byte[] newWord = new byte[16];
 
-        for (int y = 0; y < 4; y++) {
-            newWord[y * 4] = word[y * 4 + 1];
-            newWord[y * 4 + 1] = word[y * 4 + 2];
-            newWord[y * 4 + 2] = word[y * 4 + 3];
-            newWord[y * 4 + 3] = word[y * 4];
+    private byte[] MixColumns(byte[] state) {
+        byte[] result = new byte[16];
+
+        for (int i = 0; i < 4; i++) {
+            int offset = i * 4;
+            result[offset]     = (byte) (galoismul(state[offset], 2) ^ galoismul(state[offset+1], 3) ^ state[offset+2] ^ state[offset+3]);
+            result[offset + 1] = (byte) (state[offset] ^ galoismul(state[offset+1], 2) ^ galoismul(state[offset+2], 3) ^ state[offset+3]);
+            result[offset + 2] = (byte) (state[offset] ^ state[offset+1] ^ galoismul(state[offset+2], 2) ^ galoismul(state[offset+3], 3));
+            result[offset + 3] = (byte) (galoismul(state[offset], 3) ^ state[offset+1] ^ state[offset+2] ^ galoismul(state[offset+3], 2));
         }
 
-        return newWord;
+        return result;
+    }
+
+    private byte galoismul(byte a, int b) {
+        byte result = 0;
+        
+        for (int i = 0; i < 8; i++){
+            if ((b & (1 << i)) != 0) {
+                result ^= a;
+            }
+            boolean MSB = (a & 0x80) != 0;
+            a <<= 1;
+            if(MSB) {
+                a ^= 0x1B;
+            }
+        }
+        
+        return result;
+    }
+    private byte[] RotWord(byte[] word){
+        return new byte[]{word[1], word[2], word[3], word[0]};
     }
 
     private byte[] SubWord(byte[] word){
-        byte[] newWord = new byte[16];
+        byte[] newWord = new byte[4];
         
-        for (int i = 0; i < 16; i++) {
+        for (int i = 0; i < 4; i++) {
             newWord[i] = SubByte(word[i]);
         }
         
         return newWord;
     }
+
 }
