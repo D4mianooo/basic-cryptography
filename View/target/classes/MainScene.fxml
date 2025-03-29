@@ -14,7 +14,7 @@
                             <Font size="16.0" />
                         </font>
                     </Text>
-                    <TextField fx:id="keyVal" alignment="TOP_RIGHT" prefHeight="25.0" prefWidth="270.0" style="-fx-background-color: silver;" />
+                    <TextField fx:id="keyVal" prefHeight="25.0" prefWidth="515.0" style="-fx-background-color: silver;" />
                     <Button fx:id="keyBtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="60.0" style="-fx-background-color: silver;" text="Key" />
                     <Text fill="White" strokeType="OUTSIDE" strokeWidth="0.0" text="Key Length: ">
                         <font>

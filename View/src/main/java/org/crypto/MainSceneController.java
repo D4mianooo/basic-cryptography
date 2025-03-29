@@ -34,7 +34,8 @@ public class MainSceneController implements Initializable {
     public MenuItem aesBtn;
     
     private FileChooser fileChooser;
-
+    
+    private int keySize;
     
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -46,20 +47,30 @@ public class MainSceneController implements Initializable {
         Btn128.setToggleGroup(group);
         Btn192.setToggleGroup(group);
         Btn256.setToggleGroup(group);
+        
         group.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
             @Override
             public void changed(ObservableValue<? extends Toggle> observableValue, Toggle oldToggle, Toggle newToggle) {
-                System.out.println(newToggle);
+                if(newToggle == Btn128){
+                    keySize = 128;
+                }                
+                if(newToggle == Btn192){
+                    keySize = 192;
+                }                
+                if(newToggle == Btn256){
+                    keySize = 256;
+                }
             }
         });
         openBtn.setOnAction(this::OpenFileDialog);
         encryptBtn.setOnAction(event -> {
-            output.setText(input.getText());
+            output.setText(aes.EncryptText(input.getText()));
         });
         keyBtn.setOnAction(event -> {
-            byte[] bytes = AESKey.CreateKey(128);
+            if(keySize == 0) return;
+            byte[] bytes = AESKey.CreateKey(keySize);
             aes.SetKey(bytes);
-            keyVal.setText(new BigInteger(1, bytes).toString(16));
+            keyVal.setText(bytes.toString());
         });
         
         keyVal.focusedProperty().addListener((observable, oldValue, newValue) -> {

@@ -9,10 +9,17 @@ public class Main {
         AES aes = new AES();
         String password = new String("dupadupadupadupa");
         String key = new String("abcdefghijklmnop");
-        byte[] bytes = password.getBytes();
-        byte[] bytes2 = key.getBytes();
-        aes.SetKey(bytes2);
-        System.out.println(new String(bytes, StandardCharsets.UTF_8));
-        System.out.println(new BigInteger(1, aes.EncryptBlock(bytes)).toString(16));
+        byte[] plain = password.getBytes();
+        byte[] keyBytes = key.getBytes();
+        aes.SetKey(keyBytes);
+        byte[] encrypted = aes.EncryptBlock(plain);
+        byte[] decrypted = aes.DecryptBlock(encrypted);
+        for (int i = 0; i < encrypted.length; i++) {
+            System.out.println(encrypted[i] + " | " + decrypted[i]);
+        }
+        System.out.println(new BigInteger(1, plain).toString(16));
+        System.out.println(new BigInteger(1, keyBytes).toString(16));
+        System.out.println(new BigInteger(1, encrypted).toString(16));
+        System.out.println(new BigInteger(1, aes.DecryptBlock(encrypted)).toString(16));
     }
 }
