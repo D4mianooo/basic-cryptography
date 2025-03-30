@@ -36,13 +36,15 @@ public class MainSceneController implements Initializable {
     private FileChooser fileChooser;
     
     private int keySize;
-    
+    private byte[] plainText;
+    private byte[] keyBytes;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         AES aes = new AES();
         
         fileChooser = new FileChooser();
         fileChooser.setTitle("Open File");
+        
         ToggleGroup group = new ToggleGroup();
         Btn128.setToggleGroup(group);
         Btn192.setToggleGroup(group);
@@ -63,13 +65,19 @@ public class MainSceneController implements Initializable {
             }
         });
         openBtn.setOnAction(this::OpenFileDialog);
+        
         encryptBtn.setOnAction(event -> {
-            output.setText(aes.EncryptText(input.getText());
+            output.setText(aes.EncryptText(input.getText()));
         });
+        decryptBtn.setOnAction(event -> {
+//            input.setText(aes.DecryptBlock(output.getText().getBytes()));
+        });
+                
         keyBtn.setOnAction(event -> {
             if(keySize == 0) return;
-            byte[] bytes = AESKey.CreateKey(keySize);
-            keyVal.setText(new BigInteger(1, bytes).toString(16));
+            keyBytes = AESKey.CreateKey(keySize);
+            aes.SetKey(keyBytes);
+            keyVal.setText(new BigInteger(1, keyBytes).toString(16));
         });
         
         keyVal.focusedProperty().addListener((observable, oldValue, newValue) -> {

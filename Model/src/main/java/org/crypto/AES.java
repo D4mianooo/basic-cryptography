@@ -169,7 +169,7 @@ public class AES {
 
   
         for(int word = N_WORDS; word < expandedKeySize; word++) {
-            System.arraycopy(expandedKey[word - 1], 0, temp, 0, N_WORDS);
+            System.arraycopy(expandedKey[word - 1], 0, temp, 0, 4);
             if (word % N_WORDS == 0) {
                 temp =  SubWord(RotWord(temp));
                 temp[0] ^= (byte) RCON[(word/N_WORDS) - 1];
