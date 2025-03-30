@@ -44,33 +44,35 @@ public class AES {
             0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, (byte)0x80, 0x1b, 0x36,
             0x6c, 0xd8, 0xab, 0x4d, 0x9a // Extended for AES-256
     };
-    private static final byte KEY_SIZE = 16;
-    private static final byte BLOCK_SIZE = 16;
-    private static final byte ROUNDS = 10;
-    private static final byte N_WORDS = KEY_SIZE / 4;
+    private int KEY_SIZE = 16;
+    private byte BLOCK_SIZE = 16;
+    private byte ROUNDS = 10;
+    private int N_WORDS = 4;
     
-    private byte[] key = new byte[KEY_SIZE];
+    byte[] key;
     
     public AES(){
     }
     
-    public AES(byte[] key){
-        this.key = key;
-    }
-    
     public void SetKey(byte[] key){
+        KEY_SIZE = key.length;
         this.key = key;
-    }
-    
-    public byte[] GetKey(){
-        return key;
+        N_WORDS = (KEY_SIZE / 4);
     }
 
-    byte[][] keyExpanded;
-    
     public byte[] EncryptBlock(byte[] state) {
-        keyExpanded = KeyExpansion(key);
-        
+        switch (KEY_SIZE) {
+            case 16:
+                ROUNDS = 10;
+                break;
+            case 24:
+                ROUNDS = 12;
+                break;
+            case 32:
+                ROUNDS = 14;
+                break;
+        }
+        byte[][] keyExpanded = KeyExpansion(key);
         byte[] newState = AddRoundKey(state, keyExpanded[0]);
  
         for(int i = 1; i < ROUNDS; i++) {
@@ -88,6 +90,18 @@ public class AES {
     }
 
     public byte[] DecryptBlock(byte[] state) {
+        switch (KEY_SIZE) {
+            case 16:
+                ROUNDS = 10;
+                break;
+            case 24:
+                ROUNDS = 12;
+                break;
+            case 32:
+                ROUNDS = 14;
+                break;
+        }
+        byte[][] keyExpanded = KeyExpansion(key);
         byte[] newState = AddRoundKey(state, keyExpanded[ROUNDS]);
         newState = InvShiftRows(newState);  
         newState = InvSubBytes(newState);
@@ -163,8 +177,8 @@ public class AES {
                 temp = SubWord(temp);
             }
             
-            for(int i = 0; i < N_WORDS; i++) {
-                expandedKey[word][i] = (byte) (expandedKey[word - N_WORDS][i] ^ temp[i]);
+            for(int i = 0; i < 4; i++) {
+                expandedKey[word][i] = (byte) (expandedKey[word - 4][i] ^ temp[i]);
             }
         }
 

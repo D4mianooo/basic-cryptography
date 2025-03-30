@@ -64,13 +64,12 @@ public class MainSceneController implements Initializable {
         });
         openBtn.setOnAction(this::OpenFileDialog);
         encryptBtn.setOnAction(event -> {
-            output.setText(aes.EncryptText(input.getText()));
+            output.setText(aes.EncryptText(input.getText());
         });
         keyBtn.setOnAction(event -> {
             if(keySize == 0) return;
             byte[] bytes = AESKey.CreateKey(keySize);
-            aes.SetKey(bytes);
-            keyVal.setText(bytes.toString());
+            keyVal.setText(new BigInteger(1, bytes).toString(16));
         });
         
         keyVal.focusedProperty().addListener((observable, oldValue, newValue) -> {

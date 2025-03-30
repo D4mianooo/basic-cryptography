@@ -12,10 +12,11 @@ public class Main {
         byte[] plain = password.getBytes();
         byte[] keyBytes = key.getBytes();
         aes.SetKey(keyBytes);
+        
         byte[] encrypted = aes.EncryptBlock(plain);
         byte[] decrypted = aes.DecryptBlock(encrypted);
         for (int i = 0; i < encrypted.length; i++) {
-            System.out.println(encrypted[i] + " | " + decrypted[i]);
+            System.out.println(plain[i] + " | " + decrypted[i]);
         }
         System.out.println(new BigInteger(1, plain).toString(16));
         System.out.println(new BigInteger(1, keyBytes).toString(16));
