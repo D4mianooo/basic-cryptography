@@ -301,15 +301,51 @@ public class AES {
         
         return newWord;
     }
-
-    public String EncryptText(String plainText) {
-        int blocks = (int) Math.ceil(plainText.length() / 16f);
+    public byte[] EncryptText(byte[] plainText) {
+        int blocks = (int) Math.ceil(plainText.length / 16f);
         System.out.println(blocks);
         byte[] state = new byte[BLOCK_SIZE  * blocks];
-        System.arraycopy(plainText.getBytes(), 0, state, 0, plainText.length());
-        for(int i = plainText.length(); i < BLOCK_SIZE  * blocks; i++){
+        byte[] result = new byte[BLOCK_SIZE  * blocks];
+        
+        System.arraycopy(plainText, 0, state, 0, plainText.length);
+        
+        for (int i = plainText.length; i < BLOCK_SIZE  * blocks; i++){
             state[i] = 0;
         }
-        return new BigInteger(1, EncryptBlock(state)).toString(16);
+        
+        for (int i = 0; i < blocks; i++) {
+            byte[] temp = new byte[16];
+            for (int j = 0; j < BLOCK_SIZE; j++) {
+                temp[j] = state[i * 16 + j];
+            }
+            temp = EncryptBlock(temp);
+            System.arraycopy(temp, 0, result, i * 16, temp.length);
+        }
+        
+        return result;
+    }
+
+    public byte[] decode(byte[] cipherText) {
+        int blocks = (int) Math.ceil(cipherText.length / 16f);
+        System.out.println(blocks);
+        byte[] state = new byte[BLOCK_SIZE  * blocks];
+        byte[] result = new byte[BLOCK_SIZE  * blocks];
+
+        System.arraycopy(cipherText, 0, state, 0, cipherText.length);
+
+        for (int i = cipherText.length; i < BLOCK_SIZE  * blocks; i++){
+            state[i] = 0;
+        }
+
+        for (int i = 0; i < blocks; i++) {
+            byte[] temp = new byte[16];
+            for (int j = 0; j < BLOCK_SIZE; j++) {
+                temp[j] = state[i * 16 + j];
+            }
+            temp = DecryptBlock(temp);
+            System.arraycopy(temp, 0, result, i * 16, temp.length);
+        }
+        
+        return result;
     }
 }
