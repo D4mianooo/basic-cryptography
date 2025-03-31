@@ -44,10 +44,10 @@ public class AES {
             0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, (byte)0x80, 0x1b, 0x36,
             0x6c, 0xd8, 0xab, 0x4d, 0x9a // Extended for AES-256
     };
-    private int KEY_SIZE = 16;
-    private byte BLOCK_SIZE = 16;
-    private byte ROUNDS = 10;
-    private int N_WORDS = 4;
+    private static final byte BLOCK_SIZE = 16;
+    
+    private byte ROUNDS;
+    private int N_WORDS;
     
     byte[] key;
     
@@ -55,23 +55,24 @@ public class AES {
     }
     
     public void SetKey(byte[] key){
-        KEY_SIZE = key.length;
         this.key = key;
-        N_WORDS = (KEY_SIZE / 4);
-    }
-
-    public byte[] EncryptBlock(byte[] state) {
-        switch (KEY_SIZE) {
+        switch (key.length) {
             case 16:
                 ROUNDS = 10;
+                N_WORDS = 4;
                 break;
             case 24:
                 ROUNDS = 12;
+                N_WORDS = 6;
                 break;
             case 32:
                 ROUNDS = 14;
+                N_WORDS = 8;
                 break;
         }
+    }
+
+    public byte[] EncryptBlock(byte[] state) {
         byte[][] keyExpanded = KeyExpansion(key);
         byte[] newState = AddRoundKey(state, keyExpanded[0]);
  
@@ -90,17 +91,6 @@ public class AES {
     }
 
     public byte[] DecryptBlock(byte[] state) {
-        switch (KEY_SIZE) {
-            case 16:
-                ROUNDS = 10;
-                break;
-            case 24:
-                ROUNDS = 12;
-                break;
-            case 32:
-                ROUNDS = 14;
-                break;
-        }
         byte[][] keyExpanded = KeyExpansion(key);
         byte[] newState = AddRoundKey(state, keyExpanded[ROUNDS]);
         newState = InvShiftRows(newState);  
@@ -159,9 +149,9 @@ public class AES {
 
 
     private byte[][] KeyExpansion(byte[] key) {
-        int expandedKeySize = (ROUNDS + 1) * N_WORDS;
-        byte[][] expandedKey = new byte[expandedKeySize][N_WORDS];
-        byte[] temp = new byte[N_WORDS];
+        int expandedKeySize = (ROUNDS + 1) * 4;
+        byte[][] expandedKey = new byte[expandedKeySize][4];
+        byte[] temp = new byte[4];
         
         for(int i = 0; i < N_WORDS; i++) {
             expandedKey[i] = new byte[]{key[i * 4], key[i * 4 + 1], key[i * 4 + 2], key[i * 4 + 3]};
@@ -173,7 +163,7 @@ public class AES {
             if (word % N_WORDS == 0) {
                 temp =  SubWord(RotWord(temp));
                 temp[0] ^= (byte) RCON[(word/N_WORDS) - 1];
-            } else if(word % N_WORDS == 4){
+            } else if(N_WORDS > 6 && word % N_WORDS == 4){
                 temp = SubWord(temp);
             }
             
