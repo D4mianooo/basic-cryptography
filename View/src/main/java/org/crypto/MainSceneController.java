@@ -1,21 +1,18 @@
 package org.crypto;
 
-import com.sun.javafx.tk.FileChooserType;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 
-import javax.swing.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigInteger;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.ResourceBundle;
 
 public class MainSceneController implements Initializable {
@@ -24,14 +21,16 @@ public class MainSceneController implements Initializable {
     public RadioButton Btn256;
     public TextArea input;
     public TextArea output;
-    public Button openBtn;
     public Button encryptBtn;
     public Button decryptBtn;
     public Button keyBtn;
     public TextField keyVal;
     public MenuItem desBtn;
     public MenuItem aesBtn;
-    public Button saveBtn;
+    public Button saveFileBtn;
+    public Button openCiphertextBtn;
+    public Button saveCiphertextBtn;
+    public Button openFileBtn;
     private FileChooser fileChooser;
     
     private int keySize;
@@ -41,7 +40,21 @@ public class MainSceneController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         AES aes = new AES();
-        
+
+        openFileBtn.setOnAction(this::OpenPlainTextDialog);
+        saveFileBtn.setOnAction(this::SavePlainTextDialog);
+        openCiphertextBtn.setOnAction(this::OpenCipherTextDialog);
+        saveCiphertextBtn.setOnAction(this::SaveCipherTextDialog);
+        input.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if(oldValue) {
+                plainText = input.getText().getBytes(StandardCharsets.UTF_8);
+            }
+        });
+        output.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if(oldValue) {
+                cipherText = getBytesFromHex(output.getText());
+            }
+        });
         fileChooser = new FileChooser();
         fileChooser.setTitle("Open File");
         
@@ -64,53 +77,75 @@ public class MainSceneController implements Initializable {
                 }
             }
         });
-        openBtn.setOnAction(this::OpenFileDialog);
-        saveBtn.setOnAction(this::SaveFileDialog);
         
+
         encryptBtn.setOnAction(event -> {
-            byte[] plainTextBytes = input.getText().getBytes(StandardCharsets.UTF_8);
-            byte[] encrypted = aes.EncryptText(plainTextBytes);
+            aes.SetKey(keyBytes);
+            byte[] encrypted = aes.EncryptText(plainText);
             output.setText(new BigInteger(1, encrypted).toString(16));
-            plainText = plainTextBytes;
             cipherText = encrypted;
         });
+        
         decryptBtn.setOnAction(event -> {
-            byte[] bytes = getBytesFromHex(output.getText());
-            byte[] decrypted = aes.decode(bytes);
+            aes.SetKey(keyBytes);
+            byte[] decrypted = aes.decode(cipherText);
             int idx = 0; 
+
             for (int i = 0; i < decrypted.length; i++) {
                 if(idx == 0 && decrypted[i] == 0){
                     idx = i - 1;
                 }
             }
             byte[] removeZeros = new byte[idx + 1];
+
             System.arraycopy(decrypted, 0, removeZeros, 0, idx + 1);
             System.out.println(Arrays.toString(removeZeros));
-            System.out.println(Arrays.toString(decrypted));
-            
-            plainText = removeZeros;
-            cipherText = bytes;
-            input.setText(new String(removeZeros, StandardCharsets.UTF_8));
+
+            plainText = decrypted;
+            input.setText(new String(plainText, StandardCharsets.UTF_8));
         });
                 
         keyBtn.setOnAction(event -> {
             if(keySize == 0) return;
             keyBytes = AESKey.CreateKey(keySize);
-            aes.SetKey(keyBytes);
             keyVal.setText(new BigInteger(1, keyBytes).toString(16));
         });
         
         keyVal.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if(oldValue) {
-                if(!IsKeyValid(keyVal.getText())) {
-                    System.out.println("Dupa");
-                }else {
-                    byte[] key = getBytesFromHex(keyVal.getText());
-                    System.out.println(Arrays.toString(key));
-                    aes.SetKey(key);
+                if(IsKeyValid(keyVal.getText())) {
+                    keyBytes = getBytesFromHex(keyVal.getText());
+                    keySize = keyBytes.length;
                 };
             }
         });
+    }
+
+    private void SaveCipherTextDialog(ActionEvent actionEvent) {
+        
+    }
+
+    private void OpenCipherTextDialog(ActionEvent actionEvent) {
+        
+    }
+    
+    private void OpenPlainTextDialog(javafx.event.ActionEvent actionEvent) {
+        File file = fileChooser.showOpenDialog(openFileBtn.getScene().getWindow());
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            plainText = fileInputStream.readAllBytes();
+            input.setText(new BigInteger(1, plainText).toString(16));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    private void SavePlainTextDialog(javafx.event.ActionEvent actionEvent) {
+        File file = fileChooser.showSaveDialog(saveFileBtn.getScene().getWindow());
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+            fileOutputStream.write(plainText);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private byte[] getBytesFromHex(String hex) {
@@ -124,22 +159,5 @@ public class MainSceneController implements Initializable {
 
     private boolean IsKeyValid(String text) {
         return text.length() % 16 == 0;
-    }
-
-    private void OpenFileDialog(javafx.event.ActionEvent actionEvent) {
-        File file = fileChooser.showOpenDialog(openBtn.getScene().getWindow());
-        try (FileInputStream fileInputStream = new FileInputStream(file)) {
-            input.setText(new String(fileInputStream.readAllBytes()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    private void SaveFileDialog(javafx.event.ActionEvent actionEvent) {
-        File file = fileChooser.showSaveDialog(openBtn.getScene().getWindow());
-        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
-            fileOutputStream.write(input.getText().getBytes());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

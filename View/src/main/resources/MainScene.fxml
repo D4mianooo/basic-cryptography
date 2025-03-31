@@ -15,15 +15,21 @@
                         </font>
                     </Text>
                     <TextField fx:id="keyVal" prefHeight="25.0" prefWidth="515.0" style="-fx-background-color: silver;" />
-                    <Button fx:id="keyBtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="60.0" style="-fx-background-color: silver;" text="Key" />
-                    <Text fill="White" strokeType="OUTSIDE" strokeWidth="0.0" text="Key Length: ">
-                        <font>
-                            <Font size="16.0" />
-                        </font>
-                    </Text>
-                    <RadioButton fx:id="Btn128" mnemonicParsing="false" prefHeight="17.0" prefWidth="60.0" text="128bit" textFill="White" />
-                    <RadioButton fx:id="Btn192" mnemonicParsing="false" prefHeight="17.0" prefWidth="60.0" text="192bit" textFill="White" />
-                    <RadioButton fx:id="Btn256" mnemonicParsing="false" prefHeight="17.0" prefWidth="60.0" text="256bit" textFill="White" />
+                    <Button fx:id="keyBtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: silver;" text="Generate Key" />
+                    <Button fx:id="Btnsavekey" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: silver;" text="Save Your Key" />
+                    <Button fx:id="Btnloadkey" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: silver;" text="Load Your Key" />
+                </HBox>
+                <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" style="-fx-background-color: dimgrey;">
+                    <children>
+                        <Text fill="White" strokeType="OUTSIDE" strokeWidth="0.0" text="Key Length: ">
+                            <font>
+                                <Font size="16.0" />
+                            </font>
+                        </Text>
+                        <RadioButton fx:id="Btn128" mnemonicParsing="false" prefHeight="17.0" prefWidth="60.0" text="128bit" textFill="White" />
+                        <RadioButton fx:id="Btn192" mnemonicParsing="false" prefHeight="17.0" prefWidth="60.0" text="192bit" textFill="White" />
+                        <RadioButton fx:id="Btn256" mnemonicParsing="false" prefHeight="17.0" prefWidth="60.0" text="256bit" textFill="White" />
+                    </children>
                 </HBox>
                 <GridPane prefHeight="451.0" prefWidth="998.0">
                     <columnConstraints>
@@ -37,12 +43,12 @@
                     <VBox alignment="CENTER" cache="true" prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: dimgrey;">
                         <HBox alignment="CENTER_LEFT" prefHeight="48.0" prefWidth="333.0" spacing="5.0">
                             <TextField prefHeight="25.0" prefWidth="209.0" style="-fx-background-color: silver;" />
-                            <Button fx:id="openBtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: silver;" text="Open" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" />
+                            <Button fx:id="openFileBtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: silver;" text="Open" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" />
                         </HBox>
-                        <TextArea fx:id="input" prefHeight="337.0" prefWidth="333.0" style="-fx-background-color: silver;" />
+                        <TextArea fx:id="input" prefHeight="337.0" prefWidth="333.0" style="-fx-background-color: silver;" wrapText="true" />
                         <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" prefHeight="48.0" prefWidth="333.0" spacing="5.0">
                             <TextField prefHeight="25.0" prefWidth="209.0" style="-fx-background-color: silver;" />
-                            <Button fx:id="saveBtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: silver;" text="Save" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" />
+                            <Button fx:id="saveFileBtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: silver;" text="Save" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" />
                         </HBox>
                     </VBox>
                     <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" style="-fx-background-color: dimgrey;" GridPane.columnIndex="1">
@@ -52,12 +58,12 @@
                     <VBox alignment="CENTER" cache="true" layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: dimgrey;" GridPane.columnIndex="2">
                         <HBox alignment="CENTER_LEFT" prefHeight="48.0" prefWidth="333.0" spacing="5.0">
                             <TextField prefHeight="25.0" prefWidth="209.0" style="-fx-background-color: silver;" />
-                            <Button fx:id="openBtn1" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: silver;" text="Open" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" />
+                            <Button fx:id="openCiphertextBtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: silver;" text="Open" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" />
                         </HBox>
-                        <TextArea fx:id="output" prefHeight="337.0" prefWidth="333.0" style="-fx-background-color: silver;" />
+                        <TextArea fx:id="output" prefHeight="337.0" prefWidth="333.0" style="-fx-background-color: silver;" wrapText="true" />
                         <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" prefHeight="48.0" prefWidth="333.0" spacing="5.0">
                             <TextField prefHeight="25.0" prefWidth="209.0" style="-fx-background-color: silver;" />
-                            <Button fx:id="saveBtn1" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: silver;" text="Save" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" />
+                            <Button fx:id="saveCiphertextBtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: silver;" text="Save" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" />
                         </HBox>
                     </VBox>
                 </GridPane>
