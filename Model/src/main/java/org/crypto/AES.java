@@ -2,6 +2,7 @@ package org.crypto;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.Arrays;
 
 public class AES {
     private static final int[] SBOX = {
@@ -75,14 +76,13 @@ public class AES {
     public byte[] EncryptBlock(byte[] state) {
         byte[][] keyExpanded = KeyExpansion(key);
         byte[] newState = AddRoundKey(state, keyExpanded[0]);
- 
+        
         for(int i = 1; i < ROUNDS; i++) {
             newState = SubBytes(newState);
             newState = ShiftRows(newState);
             newState = MixColumns(newState);
             newState = AddRoundKey(newState, keyExpanded[i]);
-        } 
-        
+        }
         newState = SubBytes(newState);
         newState = ShiftRows(newState);
         newState = AddRoundKey(newState, keyExpanded[ROUNDS]);
@@ -168,10 +168,9 @@ public class AES {
             }
             
             for(int i = 0; i < 4; i++) {
-                expandedKey[word][i] = (byte) (expandedKey[word - 4][i] ^ temp[i]);
+                expandedKey[word][i] = (byte) (expandedKey[word - N_WORDS][i] ^ temp[i]);
             }
         }
-
 
         byte[][] result = new byte[(ROUNDS + 1)][BLOCK_SIZE];
         for (int x = 0; x < (ROUNDS + 1); x++) {
@@ -184,7 +183,7 @@ public class AES {
             result[x] = block;
         }
 
-        return result;
+        return result; 
     }
     
     private byte[] AddRoundKey(byte[] state, byte[] key) {
@@ -218,32 +217,34 @@ public class AES {
     private byte InvSubByte(byte b){
         return (byte) invSBOX[b & 255];
     }
-    
-    private byte[] ShiftRows(byte[] state){
+
+    private byte[] ShiftRows(byte[] state) {
         byte[] newState = new byte[BLOCK_SIZE];
-        
+
+        // Row 0 - no shift
         newState[0] = state[0];
         newState[4] = state[4];
         newState[8] = state[8];
         newState[12] = state[12];
 
-// Row 1 - shift left 1 (but in decryption, it should be right shift 1)
-        newState[1] = state[5];   // Should be newState[1] = state[13] (right shift)
-        newState[5] = state[9];   // Should be newState[5] = state[1]
-        newState[9] = state[13];  // Should be newState[9] = state[5]
-        newState[13] = state[1];  // Should be newState[13] = state[9]
+        // Row 1 - shift left 1
+        newState[1] = state[5];
+        newState[5] = state[9];
+        newState[9] = state[13];
+        newState[13] = state[1];
 
-// Row 2 - shift left 2 (correct for both encryption and decryption)
+        // Row 2 - shift left 2
         newState[2] = state[10];
         newState[6] = state[14];
         newState[10] = state[2];
         newState[14] = state[6];
 
-// Row 3 - shift left 3 (should be right shift 3 = left shift 1)
-        newState[3] = state[15];  // Should be newState[3] = state[7] (right shift 3)
-        newState[7] = state[3];   // Should be newState[7] = state[11]
-        newState[11] = state[7];  // Should be newState[11] = state[15]
-        newState[15] = state[11]; // Should be newState[15] = state[3]
+        // Row 3 - shift left 3
+        newState[3] = state[15];
+        newState[7] = state[3];
+        newState[11] = state[7];
+        newState[15] = state[11];
+
         return newState;
     }
     

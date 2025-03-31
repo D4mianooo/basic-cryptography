@@ -11,9 +11,6 @@ import java.io.*;
 import java.math.BigInteger;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.HexFormat;
 import java.util.ResourceBundle;
 
 public class MainSceneController implements Initializable {
@@ -103,7 +100,7 @@ public class MainSceneController implements Initializable {
         
         keyVal.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if(oldValue) {
-                if(IsKeyValid(getBytesFromHex(keyVal.getText()))){
+                if(IsKeyValid(keyVal.getText())){
                     keyBytes = getBytesFromHex(keyVal.getText());
                     System.out.println(new BigInteger(1, keyBytes).toString(16));
                 };
@@ -200,8 +197,8 @@ public class MainSceneController implements Initializable {
         return bytes;
     }
 
-    private boolean IsKeyValid(byte[] bytes) {
-        return bytes.length % 16 == 0;
+    private boolean IsKeyValid(String bytes) {
+        return bytes.length() % 16 == 0;
     }
     
     public RadioButton Btn128;
