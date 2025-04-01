@@ -11,6 +11,9 @@ import java.io.*;
 import java.math.BigInteger;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class MainSceneController implements Initializable {
@@ -24,8 +27,17 @@ public class MainSceneController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         AES aes = new AES();
         fileChooser = new FileChooser();
-        fileChooser.setTitle("Open File");
-
+        List<FileChooser.ExtensionFilter> filters = new ArrayList<>();
+        filters.add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
+        filters.add(new FileChooser.ExtensionFilter("Image", "*.png"));
+        filters.add(new FileChooser.ExtensionFilter("Image", "*.jpg"));
+        filters.add(new FileChooser.ExtensionFilter("Image", "*.jpeg"));
+        filters.add(new FileChooser.ExtensionFilter("Documents", "*.docx"));
+        filters.add(new FileChooser.ExtensionFilter("Documents", "*.csv"));
+        filters.add(new FileChooser.ExtensionFilter("Key", "*.key"));
+        filters.add(new FileChooser.ExtensionFilter("Ciphertext", "*.cipher"));
+        filters.add(new FileChooser.ExtensionFilter("All", "*.*"));
+        fileChooser.getExtensionFilters().addAll(filters);
         openFileBtn.setOnAction(this::OpenPlainTextDialog);
         saveFileBtn.setOnAction(this::SavePlainTextDialog);
         openCiphertextBtn.setOnAction(this::OpenCipherTextDialog);
@@ -81,7 +93,7 @@ public class MainSceneController implements Initializable {
         
         decryptBtn.setOnAction(event -> {
             aes.SetKey(keyBytes);
-            plainText = aes.decode(cipherText);
+            plainText = aes.DecryptText(cipherText);
             
             byte[] removeZeros = getRemoveZeros(plainText);
             
@@ -122,6 +134,7 @@ public class MainSceneController implements Initializable {
     }
 
     private void OpenKeyDialog(ActionEvent actionEvent) {
+        fileChooser.setTitle("Open Key");
         File file = fileChooser.showOpenDialog(saveKeyBtn.getScene().getWindow());
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
             keyBytes = fileInputStream.readAllBytes();
@@ -132,6 +145,7 @@ public class MainSceneController implements Initializable {
     }
 
     private void SaveKeyDialog(ActionEvent actionEvent) {
+        fileChooser.setTitle("Save Key");
         File file = fileChooser.showSaveDialog(saveKeyBtn.getScene().getWindow());
         try (FileOutputStream fileInputStream = new FileOutputStream(file)) {
             if(keyBytes != null) {
@@ -143,6 +157,7 @@ public class MainSceneController implements Initializable {
     }
 
     private void SaveCipherTextDialog(ActionEvent actionEvent) {
+        fileChooser.setTitle("Save Ciphertext");
         File file = fileChooser.showSaveDialog(saveCiphertextBtn.getScene().getWindow());
         cipherTextSavePath.setText(file.getAbsolutePath());
         try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
@@ -153,6 +168,7 @@ public class MainSceneController implements Initializable {
     }
 
     private void OpenCipherTextDialog(ActionEvent actionEvent) {
+        fileChooser.setTitle("Open Ciphertext");
         File file = fileChooser.showOpenDialog(openCiphertextBtn.getScene().getWindow());
         cipherTextPath.setText(file.getAbsolutePath());
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
@@ -164,6 +180,7 @@ public class MainSceneController implements Initializable {
     }
     
     private void OpenPlainTextDialog(javafx.event.ActionEvent actionEvent) {
+        fileChooser.setTitle("Open Plaintext");
         File file = fileChooser.showOpenDialog(openFileBtn.getScene().getWindow());
         plainTextPath.setText(file.getAbsolutePath());
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
@@ -179,6 +196,7 @@ public class MainSceneController implements Initializable {
     }
     
     private void SavePlainTextDialog(javafx.event.ActionEvent actionEvent) {
+        fileChooser.setTitle("Save Plaintext");
         File file = fileChooser.showSaveDialog(saveFileBtn.getScene().getWindow());
         plainTextSavePath.setText(file.getAbsolutePath());
         try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
