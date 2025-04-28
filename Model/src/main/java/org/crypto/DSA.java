@@ -1,84 +1,155 @@
 package org.crypto;
 
+import javafx.util.Pair;
 import org.apache.commons.codec.digest.DigestUtils;
 
-import javax.crypto.KeyGenerator;
 import java.math.BigInteger;
-import java.nio.channels.NonWritableChannelException;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 
 public class DSA {
-    private BigInteger p;
-    private BigInteger q;
-    private BigInteger g;
-    private BigInteger x;
-    private BigInteger y;
-
-    public DSA() {
-        GenerateKeyPair(1024);
-        System.out.println("p: " + p.toString(16));
-        System.out.println("q: " + q.toString(16));
-        System.out.println("g: " + g.toString(16));
-        System.out.println("x: " + x.toString(16));
-        System.out.println("y: " + y.toString(16));
-    }
-            
-    public void Sign(String message){
-        Random random = new Random();
-        String H = DigestUtils.sha1Hex(message);
-        
-        BigInteger k =  BigInteger.ZERO;
-        while (k.equals(BigInteger.ZERO)) {
-            k = new BigInteger(q.bitCount(), random);
+    public class DSAParams {
+        private BigInteger p, q, g;
+        DSAParams(BigInteger p, BigInteger q, BigInteger g) {
+            this.p = p;
+            this.q = q;
+            this.g = g;
         }
-        
-        BigInteger r = g.modPow(k, p).mod(q);
-        BigInteger b = new BigInteger(H, 16);
-        BigInteger hm = x.multiply(r).add(b).mod(q);
-        BigInteger s = k.modInverse(q).multiply(hm).mod(q);
-        
-        System.out.println("(" + r.toString(16) + ", " + s.toString(16) + ")");
+        public BigInteger getP() {
+            return p;
+        }
+        public BigInteger getQ() {
+            return q;
+        }
+        public BigInteger getG() {
+            return g;
+        }
+    }
+    public class DSAPublicKey {
+        private DSAParams params;
+        private BigInteger y;
+        DSAPublicKey(BigInteger p, BigInteger q, BigInteger g, BigInteger y) {
+            params = new DSAParams(p, q, g);
+            this.y = y;
+        }
+        DSAPublicKey(DSAParams params, BigInteger y) {
+            this.params = params; 
+            this.y = y;
+        }
+        public BigInteger getY() {
+            return y;
+        }
+
+        public DSAParams getParams() {
+            return params;
+        }
+    }
+    public class DSAPrivateKey {
+        private DSAParams params;
+        private BigInteger x;
+        DSAPrivateKey(BigInteger p, BigInteger q, BigInteger g, BigInteger x) {
+            params = new DSAParams(p, q, g);
+            this.x = x;
+        }
+        DSAPrivateKey(DSAParams params, BigInteger x) {
+            this.params = params;
+            this.x = x;
+        }
+        public BigInteger getX() {
+            return x;
+        }
     }
     
-    public void GenerateKeyPair(int bitsSize) {
+    public class DSASignature {
+        private BigInteger r, s;
+        DSASignature(BigInteger r, BigInteger s) {
+            this.r = r;
+            this.s = s;
+        }
+
+
+        public BigInteger getR() {
+            return r;
+        }
+
+        public BigInteger getS() {
+            return s;
+        }
+    }
+    
+    public DSA() {
+    }
+
+    public Pair<DSAPrivateKey, DSAPublicKey> GenerateKeyPair(int bitsSize) {
         int N = 160;
         int L = bitsSize;
 
         Random random = new Random();
-        
-        
         BigInteger q = BigInteger.probablePrime(N, random);
-        BigInteger p = BigInteger.probablePrime(L, random);
-
-        int h = getRandomNumber(2, p.intValue() - 2);
-
+        //
+        BigInteger p;
+        
+        do {
+            p = BigInteger.probablePrime(L, random);
+            p = p.subtract(p.subtract(BigInteger.ONE).remainder(q));
+        }while (!(p.isProbablePrime(4)));
+        
+        BigInteger g;
         BigInteger power = p.subtract(BigInteger.ONE).divide(q);
-        BigInteger g = BigInteger.valueOf(h).modPow(power, p);
-        //FINE
-
-        BigInteger x = BigInteger.ZERO;
-
-        while (x.equals(BigInteger.ZERO)) {
-            x = new BigInteger(q.bitCount(), random);
-        }
         
+        do {
+            BigInteger h = new BigInteger(bitsSize, random).mod(p.subtract(BigInteger.valueOf(3))).add(BigInteger.TWO);
+            g = h.modPow(power, p);
+        }while (!(g.compareTo(BigInteger.ONE) == 1));
+        //
+        BigInteger x =  new BigInteger(q.bitCount(), random).mod(q.subtract(BigInteger.ONE)).add(BigInteger.ONE);;
+
         BigInteger y = g.modPow(x, p);
-        
-        this.x = x;
-        this.y = y;
-        this.q = q;
-        this.p = p;
-        this.g = g;
-    }
-        
-    public int getRandomNumber ( int min, int max){
-        return (int) ((Math.random() * (max - min)) + min);
-    }
 
-    public BigInteger getY() {
-        return y;
+        DSAParams params = new DSAParams(p, q, g);
+        DSAPublicKey publicKey = new DSAPublicKey(params, y);
+        DSAPrivateKey privateKey  = new DSAPrivateKey(params, x);
+        
+        return new Pair<>(privateKey, publicKey);
+    }
+    
+    public boolean Verify(byte[] message, DSASignature dsaSignature, DSAPublicKey publicKey) {
+        BigInteger q = publicKey.getParams().getQ();
+        BigInteger p = publicKey.getParams().getP();
+        BigInteger g = publicKey.getParams().getG();
+        BigInteger y = publicKey.getY();
+        BigInteger r = dsaSignature.getR();
+        BigInteger s = dsaSignature.getS();
+        
+        BigInteger H = new BigInteger(DigestUtils.sha1(message));
+        
+        BigInteger w = s.modInverse(q);
+        
+        BigInteger u1 = w.multiply(H).mod(q);
+        
+        BigInteger u2 = w.multiply(r).mod(q);
+        
+        BigInteger v = g.mod(p).modPow(u1, p).multiply(y.mod(p).modPow(u2, p)).mod(p).mod(q);
+
+        return v.compareTo(r) == 0;
+    }
+    
+    public DSASignature Sign(byte[] message, DSAPrivateKey privateKey){
+        Random random = new Random();
+
+        BigInteger q = privateKey.params.getQ();
+        BigInteger p = privateKey.params.getP();
+        BigInteger g = privateKey.params.getG();
+        BigInteger x = privateKey.getX();
+        
+        BigInteger k =  new BigInteger(q.bitCount(), random).mod(q.subtract(BigInteger.ONE)).add(BigInteger.ONE);;
+        
+        BigInteger r = g.modPow(k, p).mod(q);
+        
+        BigInteger H = new BigInteger( DigestUtils.sha1(message));
+        
+        BigInteger hm = x.multiply(r).add(H).mod(q);
+        BigInteger s = k.modInverse(q).multiply(hm).mod(q);
+
+        return new DSASignature(r, s);    
     }
 }

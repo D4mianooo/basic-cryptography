@@ -6,6 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
+import javafx.util.Pair;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -25,6 +26,10 @@ public class MainSceneController implements Initializable {
     boolean isFile = false;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        DSA dsa = new DSA();
+        Pair<DSA.DSAPrivateKey, DSA.DSAPublicKey> keys = dsa.GenerateKeyPair(1024);
+        DSA.DSAParams params = keys.getValue().getParams();
+        qgtxt.setText(params.getQ().toString(16));
         AES aes = new AES();
         fileChooser = new FileChooser();
         List<FileChooser.ExtensionFilter> filters = new ArrayList<>();
@@ -246,4 +251,7 @@ public class MainSceneController implements Initializable {
     public Button openKeyBtn;
     public Button saveCiphertextBtn;
     public Button openFileBtn;
+    
+    public  TextField qgtxt;
+    
 }
