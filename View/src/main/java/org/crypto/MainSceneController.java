@@ -4,14 +4,20 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
+import javafx.stage.Popup;
+import javafx.stage.PopupWindow;
+import javafx.stage.WindowEvent;
 import javafx.util.Pair;
 
 import java.io.*;
 import java.math.BigInteger;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.Signature;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -24,12 +30,11 @@ public class MainSceneController implements Initializable {
     private byte[] cipherText;
     private byte[] keyBytes;
     boolean isFile = false;
+    private byte[] DSA_plainText;
+    Pair<DSA.DSAPrivateKey, DSA.DSAPublicKey> keys;
+    DSA.DSASignature signature;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        DSA dsa = new DSA();
-        Pair<DSA.DSAPrivateKey, DSA.DSAPublicKey> keys = dsa.GenerateKeyPair(1024);
-        DSA.DSAParams params = keys.getValue().getParams();
-        qgtxt.setText(params.getQ().toString(16));
         AES aes = new AES();
         fileChooser = new FileChooser();
         List<FileChooser.ExtensionFilter> filters = new ArrayList<>();
@@ -123,8 +128,126 @@ public class MainSceneController implements Initializable {
                 };
             }
         });
+
+        Alert success = new Alert(Alert.AlertType.INFORMATION);
+        success.setTitle("Success!");
+        success.setHeaderText(null);
+        success.setContentText("Verfication Successfully!");
+        
+        Alert failure = new Alert(Alert.AlertType.WARNING);
+        failure.setTitle("Failure!");   
+        failure.setHeaderText(null);
+        failure.setContentText("Verfication Failure!");
+        
+        DSA dsa = new DSA();
+        genbtn.setOnAction(event -> {
+            keys = dsa.GenerateKeyPair(1024);
+            DSA.DSAParams params = keys.getValue().getParams();
+            qgtxt.setText(params.getQ().toString(16) + params.getG().toString(16));
+            ytxt.setText(keys.getValue().getY().toString(16));
+            xtxt.setText(keys.getKey().getX().toString(16));
+            ptxt.setText(params.getP().toString(16));
+
+        });
+        signBtn.setOnAction(event -> {
+            signature = dsa.Sign(inputtxt.getText().getBytes(), keys.getKey());
+            certificatetxtarea.setText(signature.getR().toString(16) + "\n" + signature.getS().toString(16));
+        });
+        verifyBtn.setOnAction(event -> {
+            String[] signatureTxt = certificatetxtarea.getText().split("\n");
+            signature = new DSA.DSASignature(new BigInteger(signatureTxt[0], 16), new BigInteger(signatureTxt[1], 16));
+            boolean result = dsa.Verify(inputtxt.getText().getBytes(), signature, keys.getValue());
+            if(result) {
+                success.show();
+                failure.hide();
+            }else {
+                failure.show();
+                success.hide();
+            }
+        });
+        fileopenbtn.setOnAction(this::DSA_OpenPlainTextDialog);
+        savecertificatebtn.setOnAction(this::DSA_SaveSignature);
+        certificateopenbtn.setOnAction(this::DSA_OpenSignature);
+        savefilebtn.setOnAction(this::DSA_SavePlainText);
+        loadkeybtn.setOnAction(this::DSA_OpenKey);
+        savekeybtn.setOnAction(this::DSA_SaveKey);
+    }
+    
+    private void DSA_SavePlainText(javafx.event.ActionEvent actionEvent) {
+        fileChooser.setTitle("Save Plaintext");
+        File file = fileChooser.showSaveDialog(fileopenbtn.getScene().getWindow());
+        savefiletxt.setText(file.getAbsolutePath());
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+            fileOutputStream.write(DSA_plainText);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    private void DSA_OpenPlainTextDialog(javafx.event.ActionEvent actionEvent) {
+        fileChooser.setTitle("Open Plaintext");
+        File file = fileChooser.showOpenDialog(fileopenbtn.getScene().getWindow());
+        filetxt.setText(file.getAbsolutePath());
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            DSA_plainText = fileInputStream.readAllBytes();
+            inputtxt.setText(new String(DSA_plainText));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    private void DSA_SaveSignature(javafx.event.ActionEvent actionEvent) {
+        fileChooser.setTitle("Save Signature");
+        File file = fileChooser.showSaveDialog(fileopenbtn.getScene().getWindow());
+        savecertificatetxt.setText(file.getAbsolutePath());
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+            fileOutputStream.write(certificatetxtarea.getText().getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    private void DSA_OpenSignature(javafx.event.ActionEvent actionEvent) {
+        fileChooser.setTitle("Open Signature");
+        File file = fileChooser.showOpenDialog(fileopenbtn.getScene().getWindow());
+        certificate.setText(file.getAbsolutePath());
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            certificatetxtarea.setText(new String(fileInputStream.readAllBytes(), StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
+    private void DSA_SaveKey(javafx.event.ActionEvent actionEvent) {
+        fileChooser.setTitle("Save key");
+        File file = fileChooser.showSaveDialog(fileopenbtn.getScene().getWindow());
+        savekeytxt.setText(file.getAbsolutePath());
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            objectOutputStream.writeObject(keys);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    private void DSA_OpenKey(javafx.event.ActionEvent actionEvent)  {
+        fileChooser.setTitle("Open key");
+        File file = fileChooser.showOpenDialog(fileopenbtn.getScene().getWindow());
+        loadkeytxt.setText(file.getAbsolutePath());
+        try (FileInputStream fileInputStream= new FileInputStream(file)) {
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            keys = (Pair<DSA.DSAPrivateKey, DSA.DSAPublicKey>) objectInputStream.readObject();
+            qgtxt.setText(keys.getValue().getParams().getQ().toString(16) + keys.getValue().getParams().getG().toString(16));
+            ytxt.setText(keys.getValue().getY().toString(16));
+            xtxt.setText(keys.getKey().getX().toString(16));
+            ptxt.setText(keys.getValue().getParams().getP().toString(16));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
     private static byte[] getRemoveZeros(byte[] decrypted) {
         int idx = 0;
         for (int i = 0; i < decrypted.length; i++) {
@@ -253,5 +376,24 @@ public class MainSceneController implements Initializable {
     public Button openFileBtn;
     
     public  TextField qgtxt;
-    
+    public  TextField ytxt;
+    public  TextField xtxt;
+    public  TextField loadkeytxt;
+    public  TextField savekeytxt;
+    public  TextField filetxt;
+    public  TextField certificate;
+    public  TextField savefiletxt;
+    public  TextField savecertificatetxt;
+    public  TextField ptxt;
+    public Button genbtn;
+    public Button signBtn;
+    public Button verifyBtn;
+    public Button fileopenbtn;
+    public Button savecertificatebtn;
+    public Button certificateopenbtn;
+    public Button loadkeybtn;
+    public Button savekeybtn;
+    public Button savefilebtn;
+    public TextArea inputtxt;
+    public TextArea certificatetxtarea;
 }

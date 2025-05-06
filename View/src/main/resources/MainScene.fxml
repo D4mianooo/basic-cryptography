@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" style="-fx-background-color: silver;" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.crypto.MainSceneController">
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" style="-fx-background-color: silver;" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.crypto.MainSceneController">
     <Tab text="AES">
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
             <VBox prefHeight="573.0" prefWidth="1000.0">
@@ -14,18 +14,13 @@
                             <Font size="16.0" />
                         </font>
                     </Text>
-                    <TextField fx:id="keyVal" prefHeight="25.0" prefWidth="515.0" style="-fx-background-color: silver;" />
+                    <TextField fx:id="keyVal" prefHeight="25.0" prefWidth="515.0" promptText="Tu wpisz klucz" style="-fx-background-color: white;" />
                     <Button fx:id="keyBtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: silver;" text="Generate Key" />
-                    <Button fx:id="Btnsavekey" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: silver;" text="Save Your Key" />
-                    <Button fx:id="Btnloadkey" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: silver;" text="Load Your Key" />
+                    <Button fx:id="saveKeyBtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: silver;" text="Save Your Key" />
+                    <Button fx:id="openKeyBtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: silver;" text="Open Your Key" />
                 </HBox>
-                <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" style="-fx-background-color: dimgrey;">
+                <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" style="-fx-background-color: dimgrey;">
                     <children>
-                        <Text fill="White" strokeType="OUTSIDE" strokeWidth="0.0" text="Key Length: ">
-                            <font>
-                                <Font size="16.0" />
-                            </font>
-                        </Text>
                         <RadioButton fx:id="Btn128" mnemonicParsing="false" prefHeight="17.0" prefWidth="60.0" text="128bit" textFill="White" />
                         <RadioButton fx:id="Btn192" mnemonicParsing="false" prefHeight="17.0" prefWidth="60.0" text="192bit" textFill="White" />
                         <RadioButton fx:id="Btn256" mnemonicParsing="false" prefHeight="17.0" prefWidth="60.0" text="256bit" textFill="White" />
@@ -42,233 +37,200 @@
                     </rowConstraints>
                     <VBox alignment="CENTER" cache="true" prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: dimgrey;">
                         <HBox alignment="CENTER_LEFT" prefHeight="48.0" prefWidth="333.0" spacing="5.0">
-                            <TextField prefHeight="25.0" prefWidth="209.0" style="-fx-background-color: silver;" />
-                            <Button fx:id="openBtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: silver;" text="Open" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" />
+                            <TextField fx:id="plainTextPath" prefHeight="25.0" prefWidth="209.0" style="-fx-background-color: white;" />
+                            <Button fx:id="openFileBtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: silver;" text="Open" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" />
                         </HBox>
-                        <TextArea fx:id="input" prefHeight="337.0" prefWidth="333.0" style="-fx-background-color: silver;" />
+                        <TextArea fx:id="input" prefHeight="337.0" prefWidth="333.0" promptText="Tu wpisz tekst jawny" style="-fx-background-color: silver;" wrapText="true" />
                         <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" prefHeight="48.0" prefWidth="333.0" spacing="5.0">
-                            <TextField prefHeight="25.0" prefWidth="209.0" style="-fx-background-color: silver;" />
-                            <Button fx:id="saveBtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: silver;" text="Save" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" />
+                            <TextField fx:id="plainTextSavePath" prefHeight="25.0" prefWidth="209.0" style="-fx-background-color: white;" />
+                            <Button fx:id="saveFileBtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: silver;" text="Save" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" />
                         </HBox>
                     </VBox>
                     <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" style="-fx-background-color: dimgrey;" GridPane.columnIndex="1">
+                        <RadioButton fx:id="plainTextBtn" mnemonicParsing="false" text="PlainText" />
+                        <RadioButton fx:id="fileBtn" mnemonicParsing="false" text="File" />
                         <Button fx:id="encryptBtn" alignment="CENTER" mnemonicParsing="false" prefHeight="25.0" prefWidth="280.0" style="-fx-background-color: silver;" text="Encrypt &gt;&gt;" />
                         <Button fx:id="decryptBtn" alignment="CENTER" layoutX="101.0" layoutY="214.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="280.0" style="-fx-background-color: silver;" text="&lt;&lt; Decrypt" />
                     </VBox>
                     <VBox alignment="CENTER" cache="true" layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: dimgrey;" GridPane.columnIndex="2">
                         <HBox alignment="CENTER_LEFT" prefHeight="48.0" prefWidth="333.0" spacing="5.0">
-                            <TextField prefHeight="25.0" prefWidth="209.0" style="-fx-background-color: silver;" />
-                            <Button fx:id="openBtn1" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: silver;" text="Open" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" />
+                            <TextField fx:id="cipherTextPath" prefHeight="25.0" prefWidth="209.0" style="-fx-background-color: white;" />
+                            <Button fx:id="openCiphertextBtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: silver;" text="Open" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" />
                         </HBox>
-                        <TextArea fx:id="output" prefHeight="337.0" prefWidth="333.0" style="-fx-background-color: silver;" />
+                        <TextArea fx:id="output" prefHeight="337.0" prefWidth="333.0" promptText="Tu wpisz szyfrogram" style="-fx-background-color: silver;" wrapText="true" />
                         <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" prefHeight="48.0" prefWidth="333.0" spacing="5.0">
-                            <TextField prefHeight="25.0" prefWidth="209.0" style="-fx-background-color: silver;" />
-                            <Button fx:id="saveBtn1" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: silver;" text="Save" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" />
+                            <TextField fx:id="cipherTextSavePath" prefHeight="25.0" prefWidth="209.0" style="-fx-background-color: white;" />
+                            <Button fx:id="saveCiphertextBtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" style="-fx-background-color: silver;" text="Save" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" />
                         </HBox>
                     </VBox>
                 </GridPane>
             </VBox>
         </AnchorPane>
     </Tab>
-    <Tab text="DES">
+    <Tab text="DSA">
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: dimgrey;">
             <children>
                 <VBox layoutX="-1.0" layoutY="1.0" prefHeight="568.0" prefWidth="1000.0">
                     <children>
-                        <HBox prefHeight="20.0" prefWidth="1000.0">
+                        <HBox prefHeight="30.0" prefWidth="1000.0">
                             <children>
-                                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="KLUCZE">
+                                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="KEYS">
                                     <font>
                                         <Font size="20.0" />
                                     </font></Text>
                             </children>
                         </HBox>
-                        <HBox layoutX="10.0" layoutY="10.0" prefHeight="35.0" prefWidth="1000.0">
+                  <VBox>
+                     <children>
+                              <HBox prefHeight="35.0" prefWidth="1000.0">
+                                  <children>
+                                      <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="q &amp; g:" wrappingWidth="150.0">
+                                          <font>
+                                              <Font size="16.0" />
+                                          </font>
+                              </Text>
+                                      <TextField fx:id="qgtxt" prefHeight="33.0" prefWidth="840.0" />
+                                  </children>
+                              </HBox>
+                              <HBox prefHeight="35.0" prefWidth="1000.0">
+                                  <children>
+                                      <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Public Key: y" wrappingWidth="150.0">
+                                          <font>
+                                              <Font size="16.0" />
+                                          </font>
+                              </Text>
+                                      <TextField fx:id="ytxt" prefHeight="33.0" prefWidth="840.0" />
+                                  </children>
+                              </HBox>
+                              <HBox prefHeight="35.0" prefWidth="1000.0">
+                                  <children>
+                                      <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Private Key: x " wrappingWidth="150.0">
+                                          <font>
+                                              <Font size="16.0" />
+                                          </font>
+                              </Text>
+                                      <TextField prefHeight="33.0" prefWidth="840.0" fx:id="xtxt" />
+                                  </children>
+                              </HBox>
+                              <HBox prefHeight="35.0" prefWidth="1000.0">
+                                  <children>
+                                      <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="MOD p " wrappingWidth="150.0">
+                                          <font>
+                                              <Font size="16.0" />
+                                          </font>
+                              </Text>
+                                      <TextField fx:id="ptxt" prefHeight="33.0" prefWidth="840.0" />
+                                  </children>
+                              </HBox>
+                     </children>
+                  </VBox>
+                        <HBox alignment="CENTER" layoutX="10.0" layoutY="150.0" prefHeight="50.0" prefWidth="1000.0">
                             <children>
-                                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="q oraz g:" wrappingWidth="150.0">
-                                    <font>
-                                        <Font size="16.0" />
-                                    </font></Text>
-                                <TextField fx:id="qgtxt" prefHeight="26.0" prefWidth="840.0">
-                                    <font>
-                                        <Font size="16.0" />
-                                    </font></TextField>
-                            </children>
-                        </HBox>
-                        <HBox layoutX="10.0" layoutY="45.0" prefHeight="35.0" prefWidth="1000.0">
-                            <children>
-                                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Klucz Publiczny: y" wrappingWidth="150.0">
-                                    <font>
-                                        <Font size="16.0" />
-                                    </font></Text>
-                                <TextField fx:id="ytxt" prefHeight="31.0" prefWidth="840.0">
-                                    <font>
-                                        <Font size="16.0" />
-                                    </font></TextField>
-                            </children>
-                        </HBox>
-                        <HBox layoutX="10.0" layoutY="80.0" prefHeight="35.0" prefWidth="1000.0">
-                            <children>
-                                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Klucz Prywatny: x " wrappingWidth="150.0">
-                                    <font>
-                                        <Font size="16.0" />
-                                    </font></Text>
-                                <TextField prefHeight="26.0" prefWidth="840.0" fx:id="xtxt">
-                                    <font>
-                                        <Font size="16.0" />
-                                    </font></TextField>
-                            </children>
-                        </HBox>
-                        <HBox layoutX="10.0" layoutY="115.0" prefHeight="35.0" prefWidth="1000.0">
-                            <children>
-                                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="MOD p " wrappingWidth="150.0">
-                                    <font>
-                                        <Font size="16.0" />
-                                    </font></Text>
-                                <TextField fx:id="ptxt" prefHeight="26.0" prefWidth="840.0">
-                                    <font>
-                                        <Font size="16.0" />
-                                    </font></TextField>
-                            </children>
-                        </HBox>
-                        <HBox layoutX="10.0" layoutY="150.0" prefHeight="35.0" prefWidth="1000.0">
-                            <children>
-                                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Wygeneruj wartości kluczy: " wrappingWidth="190.0">
-                                    <font>
-                                        <Font size="16.0" />
-                                    </font></Text>
-                                <Button fx:id="genbtn" mnemonicParsing="false" prefHeight="26.0" prefWidth="200.0" text="Generuj Klucze">
-                                    <font>
-                                        <Font size="16.0" />
-                                    </font></Button>
+                                <Button fx:id="genbtn" mnemonicParsing="false" prefHeight="26.0" prefWidth="200.0" text="Generate Keys" />
                             </children>
                         </HBox>
                         <HBox layoutX="10.0" layoutY="185.0" prefHeight="35.0" prefWidth="1000.0" spacing="10.0">
                             <children>
-                                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Wczytaj klucze z pliku: " wrappingWidth="160.0">
+                                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Load Keys" wrappingWidth="90.0">
                                     <font>
                                         <Font size="16.0" />
                                     </font></Text>
-                                <TextField fx:id="loadkeytxt" prefHeight="26.0" prefWidth="170.0" promptText="Nazwa pliku kluczy" />
-                                <Button fx:id="loadkeybtn" mnemonicParsing="false" prefHeight="26.0" prefWidth="100.0" text="Wczytaj">
-                                    <font>
-                                        <Font size="16.0" />
-                                    </font></Button>
-                                <Text fill="WHITE" layoutX="10.0" layoutY="23.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Zapisz klucze z pliku: " wrappingWidth="160.0">
+                                <TextField fx:id="loadkeytxt" prefHeight="26.0" prefWidth="170.0" promptText="File Name" />
+                                <Button fx:id="loadkeybtn" mnemonicParsing="false" prefHeight="26.0" prefWidth="100.0" text="Load" />
+                                <Text fill="WHITE" layoutX="10.0" layoutY="23.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Save Keys" wrappingWidth="90.0">
                                     <font>
                                         <Font size="16.0" />
                                     </font></Text>
-                                <TextField fx:id="savekeytxt" layoutX="141.0" layoutY="10.0" prefHeight="26.0" prefWidth="170.0" promptText="Nazwa pliku kluczy" />
-                                <Button fx:id="savekeybtn" layoutX="311.0" layoutY="10.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="100.0" text="Zapisz">
-                                    <font>
-                                        <Font size="16.0" />
-                                    </font></Button>
+                                <TextField fx:id="savekeytxt" layoutX="141.0" layoutY="10.0" prefHeight="43.0" prefWidth="170.0" promptText="File Name" />
+                                <Button fx:id="savekeybtn" layoutX="311.0" layoutY="10.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="100.0" text="Save" />
                             </children>
                         </HBox>
                         <HBox layoutX="10.0" layoutY="185.0" prefHeight="20.0" prefWidth="1000.0">
                             <children>
-                                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Podpisz / Weryfikacja">
+                                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Sign / Verify">
                                     <font>
                                         <Font size="20.0" />
                                     </font></Text>
                             </children>
                         </HBox>
-                        <HBox prefHeight="320.0" prefWidth="1000.0">
-                            <children>
-                                <VBox prefHeight="320.0" prefWidth="400.0" spacing="10.0">
+                  <GridPane prefHeight="316.0" prefWidth="1000.0">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                                <VBox alignment="CENTER" prefHeight="320.0" prefWidth="400.0" spacing="10.0">
                                     <children>
-                                        <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                                        <HBox alignment="CENTER" prefHeight="28.0" prefWidth="400.0" spacing="10.0">
                                             <children>
-                                                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Tekst Jawny">
+                                                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Public Text">
                                                     <font>
                                                         <Font size="16.0" />
                                                     </font></Text>
-                                                <TextField fx:id="filetxt" prefHeight="26.0" prefWidth="210.0">
-                                                    <font>
-                                                        <Font size="16.0" />
-                                                    </font></TextField>
-                                                <Button fx:id="fileopenbtn" mnemonicParsing="false" text="Otwórz">
-                                                    <font>
-                                                        <Font size="16.0" />
-                                                    </font></Button>
+                                                <TextField fx:id="filetxt" prefHeight="22.0" prefWidth="209.0" promptText="File Name" />
+                                                <Button fx:id="fileopenbtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" text="Open" />
                                             </children>
                                         </HBox>
-                                        <TextArea fx:id="file" prefHeight="200.0" prefWidth="200.0" />
-                                        <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                                        <TextArea fx:id="inputtxt" prefHeight="407.0" prefWidth="400.0" />
+                                        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" VBox.vgrow="SOMETIMES">
                                             <children>
-                                                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Zapisz">
+                                                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Save File:">
                                                     <font>
                                                         <Font size="16.0" />
                                                     </font></Text>
-                                                <TextField fx:id="savefiletxt">
+                                                <TextField fx:id="savefiletxt" prefHeight="29.0" prefWidth="148.0" promptText="File Name">
                                                     <font>
                                                         <Font size="16.0" />
                                                     </font></TextField>
-                                                <Button fx:id="savefilebtn" mnemonicParsing="false" text="Zapisz">
+                                                <Button fx:id="savefilebtn" mnemonicParsing="false" prefHeight="35.0" prefWidth="68.0" text="Save">
                                                     <font>
                                                         <Font size="16.0" />
                                                     </font></Button>
                                             </children></HBox>
                                     </children>
                                 </VBox>
-                                <VBox alignment="CENTER" prefHeight="320.0" prefWidth="200.0" spacing="10.0">
+                                <VBox alignment="CENTER" prefHeight="324.0" prefWidth="333.0" spacing="10.0" GridPane.columnIndex="1">
                                     <children>
-                                        <Button mnemonicParsing="false" text="Podpisuj &gt;&gt;&gt;">
-                                            <font>
-                                                <Font size="16.0" />
-                                            </font></Button>
-                                        <Button mnemonicParsing="false" text="&lt;&lt;&lt;Weryfikuj">
-                                            <font>
-                                                <Font size="16.0" />
-                                            </font></Button>
-                                        <RadioButton mnemonicParsing="false" prefHeight="22.0" prefWidth="80.0" text="Plik" textFill="WHITE">
-                                            <font>
-                                                <Font size="16.0" />
-                                            </font></RadioButton>
-                                        <RadioButton mnemonicParsing="false" prefHeight="22.0" prefWidth="80.0" text="Okno" textFill="WHITE">
-                                            <font>
-                                                <Font size="16.0" />
-                                            </font></RadioButton>
+                                        <Button fx:id="signBtn" mnemonicParsing="false" text="Sign &gt;&gt;&gt;" />
+                                        <Button fx:id="verifyBtn" mnemonicParsing="false" text="&lt;&lt;&lt;Verify" />
                                     </children>
                                 </VBox>
-                                <VBox prefHeight="320.0" prefWidth="400.0" spacing="10.0">
+                                <VBox alignment="CENTER" prefHeight="320.0" prefWidth="400.0" spacing="10.0" GridPane.columnIndex="2">
                                     <children>
                                         <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
                                             <children>
-                                                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Podpis">
+                                                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Certificate">
                                                     <font>
                                                         <Font size="16.0" />
                                                     </font></Text>
-                                                <TextField fx:id="certificatetxt" prefHeight="26.0" prefWidth="210.0">
-                                                    <font>
-                                                        <Font size="16.0" />
-                                                    </font></TextField>
-                                                <Button fx:id="certificateopenbtn" mnemonicParsing="false" text="Otwórz">
-                                                    <font>
-                                                        <Font size="16.0" />
-                                                    </font></Button>
+                                                <TextField fx:id="certificate" prefHeight="26.0" prefWidth="210.0" promptText="File Name" />
+                                                <Button fx:id="certificateopenbtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" text="Open" />
                                             </children>
                                         </HBox>
-                                        <TextArea fx:id="certificatetxtarea" prefHeight="200.0" prefWidth="200.0" />
+                                        <TextArea fx:id="certificatetxtarea" prefHeight="380.0" prefWidth="400.0" />
                                         <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
                                             <children>
-                                                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Zapisz">
+                                                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Save Certificate: ">
                                                     <font>
                                                         <Font size="16.0" />
                                                     </font></Text>
-                                                <TextField fx:id="savecertificatetxt">
+                                                <TextField fx:id="savecertificatetxt" prefHeight="10.0" prefWidth="156.0" promptText="File Name">
                                                     <font>
                                                         <Font size="16.0" />
                                                     </font></TextField>
-                                                <Button fx:id="savecertificatebtn" mnemonicParsing="false" text="Zapisz">
+                                                <Button fx:id="savecertificatebtn" mnemonicParsing="false" prefHeight="0.0" prefWidth="83.0" text="Save">
                                                     <font>
                                                         <Font size="16.0" />
                                                     </font></Button>
                                             </children></HBox>
                                     </children>
                                 </VBox>
-                            </children>
-                        </HBox>
+                     </children>
+                  </GridPane>
                     </children>
                 </VBox>
             </children></AnchorPane>

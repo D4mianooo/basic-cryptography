@@ -3,11 +3,12 @@ package org.crypto;
 import javafx.util.Pair;
 import org.apache.commons.codec.digest.DigestUtils;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Random;
 
-public class DSA {
-    public class DSAParams {
+public class DSA  implements Serializable {
+    public class DSAParams implements Serializable{
         private BigInteger p, q, g;
         DSAParams(BigInteger p, BigInteger q, BigInteger g) {
             this.p = p;
@@ -24,7 +25,7 @@ public class DSA {
             return g;
         }
     }
-    public class DSAPublicKey {
+    public class DSAPublicKey implements Serializable {
         private DSAParams params;
         private BigInteger y;
         DSAPublicKey(BigInteger p, BigInteger q, BigInteger g, BigInteger y) {
@@ -43,7 +44,7 @@ public class DSA {
             return params;
         }
     }
-    public class DSAPrivateKey {
+    public class DSAPrivateKey implements Serializable {
         private DSAParams params;
         private BigInteger x;
         DSAPrivateKey(BigInteger p, BigInteger q, BigInteger g, BigInteger x) {
@@ -59,9 +60,9 @@ public class DSA {
         }
     }
     
-    public class DSASignature {
+    public static class DSASignature implements Serializable {
         private BigInteger r, s;
-        DSASignature(BigInteger r, BigInteger s) {
+        public DSASignature(BigInteger r, BigInteger s) {
             this.r = r;
             this.s = s;
         }
@@ -91,7 +92,7 @@ public class DSA {
         do {
             p = BigInteger.probablePrime(L, random);
             p = p.subtract(p.subtract(BigInteger.ONE).remainder(q));
-        }while (!(p.isProbablePrime(4)));
+        }while (!(p.isProbablePrime(1)));
         
         BigInteger g;
         BigInteger power = p.subtract(BigInteger.ONE).divide(q);
